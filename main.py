@@ -5,31 +5,26 @@ from io import StringIO
 
 app = FastAPI()
 
-# ✅ CORS — REQUIRED FOR GRADER
+# ✅ Correct CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        # allow all origins
+    allow_origins=["*"],        # required
     allow_credentials=True,
-    allow_methods=["*"],        # allow POST + OPTIONS
-    allow_headers=["*"],        # allow custom headers
+    allow_methods=["*"],        # must allow OPTIONS
+    allow_headers=["*"],        # must allow custom headers
 )
 
-# ✅ Constants
+# Constants
 MAX_FILE_SIZE = 92 * 1024
 VALID_EXTENSIONS = {".csv", ".json", ".txt"}
 UPLOAD_TOKEN = "qheflcbc902lztto"
 
-# ✅ Root route (optional but helps health checks)
+# Optional root route (helps health checks)
 @app.get("/")
 def root():
     return {"status": "ok"}
 
-# ✅ Explicit OPTIONS handler for preflight safety
-@app.options("/upload")
-async def options_upload():
-    return {}
-
-# ✅ Upload endpoint
+# Upload endpoint
 @app.post("/upload")
 async def upload_file(
     file: UploadFile = File(...),
@@ -76,5 +71,5 @@ async def upload_file(
             "categoryCounts": category_counts
         }
 
-    # For valid non-CSV files
+    # Valid non-CSV files
     return {"message": "File accepted"}
